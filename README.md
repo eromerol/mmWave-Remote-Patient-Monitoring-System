@@ -28,10 +28,10 @@ Master's Thesis project focused on the design, implementation and validation of 
 
 ## Repository Structure
 
-firmware/
-home_assistant/
-docs/
-media/
+- firmware/
+- home_assistant/
+- docs/
+- media/
 
 ## Author
 
