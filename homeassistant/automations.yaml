@@ -1,0 +1,102 @@
+- id: '1775598235514'
+  alias: 'Alarma: Frecuencia Cardíaca'
+  description: 'Vigila los extremos del pulso: Bradicardia (<60) y Taquicardia (>100)
+    confirmadas durante 1 minuto.'
+  triggers:
+  - entity_id: sensor.pulso_paciente
+    below: 60
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    id: bradicardia
+    trigger: numeric_state
+  - entity_id: sensor.pulso_paciente
+    above: 100
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    id: taquicardia
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - action: notify.persistent_notification
+    metadata: {}
+    data:
+      title: ALERTA CARDÍACA
+      message: "{% if trigger.id == 'bradicardia' %}\n  ¡ATENCIÓN! Posible BRADICARDIA.
+        El pulso del paciente ha caído a {{ states('sensor.pulso_paciente') }} BPM.\n{%
+        else %}\n  ¡ATENCIÓN! Posible TAQUICARDIA. El pulso del paciente se ha elevado
+        a {{ states('sensor.pulso_paciente') }} BPM.\n{% endif %}\n"
+  - action: notify.email_supervisor
+    data:
+      title: ALERTA MÉDICA
+      message: 'ALERTA CRÍTICA DEL SISTEMA DE MONITORIZACIÓN.
+
+        Se ha detectado una anomalía mantenida en las constantes del paciente: - Pulso
+        actual: {{ states(''sensor.pulso_paciente'') }} BPM - Respiración: {{ states(''sensor.respiracion_paciente'')
+        }} RPM - Estado inferido: {{ states(''sensor.estado_del_paciente'') }}
+
+        Por favor, verifique el estado del paciente.
+
+        '
+  mode: single
+- id: '1775858028602'
+  alias: 'Alarma: Respiración Crítica'
+  description: Detecta apnea (<12 RPM) o taquipnea (>25 RPM) mantenida durante 1 minuto.
+  triggers:
+  - entity_id: sensor.respiracion_paciente
+    below: 12
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    id: apnea
+    trigger: numeric_state
+  - entity_id: sensor.respiracion_paciente
+    above: 25
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    id: taquipnea
+    trigger: numeric_state
+  actions:
+  - action: notify.persistent_notification
+    data:
+      title: ALERTA RESPIRATORIA
+      message: "{% if trigger.id == 'apnea' %}\n  Posible APNEA detectada. Valor:
+        {{ states('sensor.respiracion_paciente') }} RPM.\n{% else %}\n  Taquipnea
+        detectada. Valor: {{ states('sensor.respiracion_paciente') }} RPM.\n{% endif
+        %}\n"
+  - action: notify.email_supervisor
+    data:
+      title: ALERTA MÉDICA
+      message: 'ALERTA CRÍTICA DEL SISTEMA DE MONITORIZACIÓN.
+
+        Se ha detectado una anomalía mantenida en las constantes del paciente: - Pulso
+        actual: {{ states(''sensor.pulso_paciente'') }} BPM - Respiración: {{ states(''sensor.respiracion_paciente'')
+        }} RPM - Estado inferido: {{ states(''sensor.estado_del_paciente'') }}
+
+        Por favor, verifique el estado del paciente.
+
+        '
+  mode: single
+- id: '1775858404564'
+  alias: 'Alarma: Cama Vacía'
+  description: Notifica si el paciente no está en el área de monitorización durante
+    más de 5 minutos.
+  triggers:
+  - entity_id: sensor.distancia_radar
+    above: 200
+    for:
+      minutes: 5
+    trigger: numeric_state
+  actions:
+  - action: notify.persistent_notification
+    data:
+      title: 'Estado: Cama Vacía'
+      message: El paciente ha salido del rango del radar o la cama está vacía (Distancia
+        > 2m).
+  mode: single

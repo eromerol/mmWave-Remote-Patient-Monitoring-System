@@ -1,0 +1,53 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+homeassistant:
+  customize:
+    sensor.pulso_paciente:
+      state_class: measurement
+    sensor.respiracion_paciente:
+      state_class: measurement
+    sensor.distancia_paciente:
+      state_class: measurement
+
+binary_sensor:
+  - platform: trend
+    sensors:
+      tendencia_pulso:
+        entity_id: sensor.pulso_paciente
+        sample_duration: 300
+        min_gradient: 0.033
+        device_class: problem
+      tendencia_respiracion:
+        entity_id: sensor.respiracion_paciente
+        sample_duration: 300
+        min_gradient: 0.033
+        device_class: problem
+        
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+notify:
+  - name: email_supervisor
+    platform: smtp
+    server: smtp.gmail.com
+    port: 587
+    timeout: 15
+    sender: obscurian01@gmail.com
+    encryption: starttls
+    username: obscurian01@gmail.com
+    password: nhtnfccdxkofoixi
+    recipient:
+      - elisabethromluq@gmail.com
+    sender_name: "Alarma Monitor TFM"
+
+recorder:
+  purge_keep_days: 7
+  purge_interval: 1
+  auto_purge: true
