@@ -24,9 +24,7 @@ Master's Thesis project focused on the design, implementation and validation of 
 ## Software
 
 - Arduino IDE (C++)
-- MQTT (Mosquitto)
 - Home Assistant OS
-- SQLite
 
 ## Repository Structure
 
